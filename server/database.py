@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
     pass
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
-    # Definimos el nombre explícitamente para que coincida con la ForeignKey de Post
+  # We explicitly define the name to match the Post ForeignKey
     __tablename__ = "users" 
     
     posts = relationship("Post", back_populates="user")
@@ -22,20 +22,21 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 class Post(Base):
     __tablename__ = 'posts'
 
-    # Nota: Para SQLite, UUID puede ser un reto. Usamos el tipo UUID de SQLAlchemy
-    # que es compatible con PostgreSQL y se adapta a otros.
+# Note: For SQLite, UUIDs can be challenging. We use the SQLAlchemy UUID type
+
+# which is compatible with PostgreSQL and adaptable to others.
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     
-    # Aquí debe coincidir con el __tablename__ de User
+    # This must match the __tablename__ of User
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     
     caption = Column(Text)
     url = Column(String, nullable=False)
     file_type = Column(String, nullable=False)
     file_name = Column(String, nullable=False)
-    
-    # Importante: Quitamos los paréntesis de datetime.now(UTC) 
-    # para que se ejecute al crear el registro, no al arrancar el server.
+    # Important: We removed the parentheses from datetime.now(UTC)
+
+# so that it executes when the record is created, not when the server starts.
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     user = relationship("User", back_populates="posts")
